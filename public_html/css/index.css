@@ -19,6 +19,12 @@ body {
 	height: 500px;
 	margin: 0 auto;
 	padding: 20px;
-	background: url(/img/test.9.png);
+	background: #fff url(../img/test.9.png) no-repeat -1000px -1000px;
 	position: relative;
+}
+
+#fork_me {
+	position: absolute;
+	right: 41px;
+	top: 0px;
 }
