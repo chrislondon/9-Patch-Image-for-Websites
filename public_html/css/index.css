@@ -1,0 +1,24 @@
+/***
+ *  Generic CSS Styles
+ */
+body, html {
+	height:100%;
+	width:100%;
+}
+
+body {
+	background: #bbcfd8;
+	padding-top: 20px;
+}
+
+/***
+ *  Content Styles
+ */
+#center_content {
+	width: 800px;
+	height: 499px;
+	margin: 0 auto;
+	padding: 20px;
+	background: url(/img/SCButtonCellImage.9.png);
+	position: relative;
+}
