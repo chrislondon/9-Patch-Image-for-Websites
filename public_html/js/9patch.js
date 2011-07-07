@@ -139,17 +139,19 @@ $(window).load(function() {
 					sheight,
 					0,
 					0,
-					img.width-sx-swidth-1,
+					img.width-sx-swidth-2,
 					sheight);
 			
 			var pattern = ctx.createPattern(middleRightCanvas, 'repeat');
+			ctx.translate($(this).width()-(img.width-sx-swidth-2),sy-1);
 			ctx.fillStyle = pattern;
 			ctx.fillRect(
-				$(this).width()-(img.width-sx-swidth-2),
-				sy-1,
+				0,
+				0,
 				img.width-sx-swidth-1,
 				$(this).height()-(img.height-sy-sheight-1) - sy + 2
 			);
+			ctx.translate(-($(this).width()-(img.width-sx-swidth-2)),-(sy-1));
 			
 			// bottom center
 			// TODO fix bad math
@@ -168,13 +170,15 @@ $(window).load(function() {
 					img.height-sy-sheight-1);
 			
 			var pattern = ctx.createPattern(bottomCenterCanvas, 'repeat');
+			ctx.translate(sx-1,$(this).height()-(img.height-sy-sheight-2));
 			ctx.fillStyle = pattern;
 			ctx.fillRect(
-				sx-1,
-				$(this).height()-(img.height-sy-sheight-1),
-				$(this).width()-(img.width-sx-swidth-1) - sx,
+				0,
+				0,
+				$(this).width()-(img.width-sx-swidth-1) - sx + 2,
 				img.height-sy-sheight-1
 			);
+			ctx.translate(-(sx-1),-($(this).height()-(img.height-sy-sheight-2)));
 			
 			/*
 			 * Corners
@@ -222,9 +226,9 @@ $(window).load(function() {
 					sy+sheight,
 					img.width-sx-swidth-1,
 					img.height-sy-sheight-1,
-					$(this).width()-(img.width-sx-swidth-1),
+					$(this).width()-(img.width-sx-swidth-1) + 1,
 					$(this).height()-(img.height-sy-sheight-1) + 1,
-					img.width-sx-swidth-1,
+					img.width-sx-swidth-2,
 					img.height-sy-sheight-1);
 			
 			var position = $(this).position();
