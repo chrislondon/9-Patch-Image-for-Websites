@@ -8,5 +8,7 @@ TODO Test multiple images on the same screen
 TODO Load/speed test
 TODO Remove jQuery dependence
 TODO Make more cross-browser compatible (is that even possible in IE?)
+TODO? Add support for the padding box?
+TODO Add support for stretching vs. repeating. This is currently repeating only.
 
 Thanks everyone -- Chris
