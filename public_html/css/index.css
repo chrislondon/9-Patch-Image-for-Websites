@@ -28,3 +28,12 @@ body {
 	right: 41px;
 	top: 0px;
 }
+.contributor {
+	font-family: Arial;
+	height: 40px;
+	width: 300px;
+	position: relative;
+	font-size: 15px;
+	padding: 10px 0 0 10px;
+	background: #fff url(../img/test_multipart.9.png) no-repeat -1000px -1000px;
+}

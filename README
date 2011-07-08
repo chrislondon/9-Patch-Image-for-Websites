@@ -1,14 +1,3 @@
 This is in the very early stages.  Please feel free to participate.
 
-TODO Comment code
-TODO Optimize code
-TODO Verify that the image is slicing and repeating in the correct place. Sometimes
-	a single pixel overlap will go unnoticed
-TODO Test multiple images on the same screen
-TODO Load/speed test
-TODO Remove jQuery dependence
-TODO Make more cross-browser compatible (is that even possible in IE?)
-TODO? Add support for the padding box?
-TODO Add support for stretching vs. repeating. This is currently repeating only.
-
 Thanks everyone -- Chris

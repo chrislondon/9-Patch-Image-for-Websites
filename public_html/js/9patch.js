@@ -1,244 +1,115 @@
 $(window).load(function() {
 	$('div').each(function(){
 		if ($(this).css('background-image').match(/\.9\.png/)) {
-			var imgSrc = $(this).css('background-image').replace(/"/g,"").replace(/url\(|\)$/ig, "");
-
+			var oImgSrc = $(this).css('background-image').replace(/"/g,"").replace(/url\(|\)$/ig, "");
 			$(this).css('background', 'none');
 			
-			var ctx, canvas, img;
-			img = new Image();
-			img.src = imgSrc;
+			// o is origin
+			var oImg = new Image();
+			oImg.src = oImgSrc;
+			oWidth = oImg.width;
+			oHeight = oImg.height;
 			
-			canvas = document.createElement('canvas');
-			ctx = canvas.getContext('2d');
+			// d is destination
+			var dCtx, dCanvas, dWidth, dHeight;
+			dWidth = $(this).width();
+			dHeight = $(this).height();
+			dCanvas = document.createElement('canvas');
+			dCtx = dCanvas.getContext('2d');
 			
-			ctx.drawImage(img, 0, 0);
+			dCtx.drawImage(oImg, 0, 0);
+			
+			var horizontalPieces = new Array();
+			var verticalPieces = new Array();
+			// each piece contains d|s, position, width
 
-			// get sx, sWidth
-			var sx, swidth;
+			// Loop over each  horizontal pixel and get piece
+			data = dCtx.getImageData(0, 0, oWidth, 1).data;
+			horizontalPieces = getPieces(data);
 
-			data = ctx.getImageData(0, 0, img.width, 1).data;
-			
-			// Loop over each pixel and invert the color.
-			for (var i = 0, n = data.length; i < n; i += 4) {
-				if (sx == undefined && data[i] == 0) {
-					sx = i / 4;
-				} else if (sx != undefined && swidth == undefined && data[i] != 0) {
-					swidth = (i / 4) - sx;
-					break;
-				}
-			}		
-			// get sy, sHeight
-			var sy, sheight;
+			// Loop over each  horizontal pixel and get piece
+			data = dCtx.getImageData(0, 0, 1, oHeight).data;
+			verticalPieces = getPieces(data);
 
-			data = ctx.getImageData(0, 0, 1, img.height).data;
+			// use horizontalPieces and verticalPieces to generate image
+			dCanvas.width = dWidth;
+			dCanvas.height = dHeight;
 			
-			// Loop over each pixel and invert the color.
-			for (var i = 0, n = data.length; i < n; i += 4) {
-				if (sy == undefined && data[i] == 0) {
-					sy = i / 4;
-				} else if (sy != undefined && sheight == undefined && data[i] != 0) {
-					sheight = (i / 4) - sy;
-					break;
+			var fillWidth, fillHeight;
+			
+			var tempStaticWidth = 0;
+			var tempDynamicCount = 0;
+			for (var i = 0, n = horizontalPieces.length; i < n; i++) {
+				if (horizontalPieces[i][0] == 's') {
+					tempStaticWidth += horizontalPieces[i][2];
+				} else {
+					tempDynamicCount++;
 				}
 			}
 			
-		
+			fillWidth = (dWidth - tempStaticWidth) / tempDynamicCount;
+
+			var tempStaticHeight = 0;
+			var tempDynamicCount = 0;
+			for (var i = 0, n = verticalPieces.length; i < n; i++) {
+				if (verticalPieces[i][0] == 's') {
+					tempStaticHeight += verticalPieces[i][2];
+				} else {
+					tempDynamicCount++;
+				}
+			}
 			
-			canvas.width = $(this).width();
-			canvas.height = $(this).height();
+			fillHeight = (dHeight - tempStaticHeight) / tempDynamicCount;
 			
-			// TODO Check math on all of these things
-			
-			/*
-			 * Repeated Patterns
-			 * 
-			 * We need to create a separate canvas for each repeated section.
-			 */
-			
-			var topCenterCanvas = document.createElement('canvas');
-			topCenterCanvas.width = swidth;
-			topCenterCanvas.height = sy-1;
-			var topCenterCtx = topCenterCanvas.getContext('2d');
-			topCenterCtx.drawImage(img,
-					sx,
-					1,
-					swidth,
-					sy-1,
-					0,
-					0,
-					swidth,
-					sy-1);
-			
-			var pattern = ctx.createPattern(topCenterCanvas, 'repeat');
-			ctx.fillStyle = pattern;
-			ctx.fillRect(
-				sx-1,
-				0,
-				$(this).width()-(sx-1)-(img.width-sx-swidth-1),
-				sy-1
-			);
-			
-			// Middle left
-			var middleLeftCanvas = document.createElement('canvas');
-			middleLeftCanvas.width = sx-1;
-			middleLeftCanvas.height = sheight;
-			var middleLeftCtx = middleLeftCanvas.getContext('2d');
-			middleLeftCtx.drawImage(img,
-					1,
-					sy,
-					sx-1,
-					sheight,
-					0,
-					0,
-					sx-1,
-					sheight);
-			
-			var pattern = ctx.createPattern(middleLeftCanvas, 'repeat');
-			ctx.fillStyle = pattern;
-			ctx.fillRect(
-				0,
-				sy-1,
-				sx-1,
-				$(this).height()-(img.height-sy-sheight-1) - sy + 2
-			);
-			
-			// Middle center
-			var middleCenterCanvas = document.createElement('canvas');
-			middleCenterCanvas.height = sheight;
-			middleCenterCanvas.width = swidth;
-			var middleCenterCtx = middleCenterCanvas.getContext('2d');
-			middleCenterCtx.drawImage(img,
-					sx,
-					sy,
-					swidth,
-					sheight,
-					0,
-					0,
-					swidth,
-					sheight);
-			
-			var pattern = ctx.createPattern(middleCenterCanvas, 'repeat');
-			ctx.fillStyle = pattern;
-			ctx.fillRect(
-				sx - 1,
-				sy - 1,
-				$(this).width()-(img.width-sx-swidth-1) - sx + 2,
-				$(this).height()-(img.height-sy-sheight-1) - sy + 2
-			);
-			
-			// Middle right
-			var middleRightCanvas = document.createElement('canvas');
-			middleRightCanvas.width = img.width-sx-swidth-1;
-			middleRightCanvas.height = sheight;
-			var middleRightCtx = middleRightCanvas.getContext('2d');
-			middleRightCtx.drawImage(img,
-					sx+swidth,
-					sy,
-					img.width-sx-swidth-1,
-					sheight,
-					0,
-					0,
-					img.width-sx-swidth-2,
-					sheight);
-			
-			var pattern = ctx.createPattern(middleRightCanvas, 'repeat');
-			ctx.translate($(this).width()-(img.width-sx-swidth-2),sy-1);
-			ctx.fillStyle = pattern;
-			ctx.fillRect(
-				0,
-				0,
-				img.width-sx-swidth-1,
-				$(this).height()-(img.height-sy-sheight-1) - sy + 2
-			);
-			ctx.translate(-($(this).width()-(img.width-sx-swidth-2)),-(sy-1));
-			
-			// bottom center
-			// TODO fix bad math
-			var bottomCenterCanvas = document.createElement('canvas');
-			bottomCenterCanvas.width = swidth;
-			bottomCenterCanvas.height = img.height-sy-sheight-1;
-			var bottomCenterCtx = bottomCenterCanvas.getContext('2d');
-			bottomCenterCtx.drawImage(img,
-					sx,
-					sy+sheight,
-					swidth,
-					img.height-sy-sheight-1,
-					0,
-					0,
-					swidth,
-					img.height-sy-sheight-1);
-			
-			var pattern = ctx.createPattern(bottomCenterCanvas, 'repeat');
-			ctx.translate(sx-1,$(this).height()-(img.height-sy-sheight-2));
-			ctx.fillStyle = pattern;
-			ctx.fillRect(
-				0,
-				0,
-				$(this).width()-(img.width-sx-swidth-1) - sx + 2,
-				img.height-sy-sheight-1
-			);
-			ctx.translate(-(sx-1),-($(this).height()-(img.height-sy-sheight-2)));
-			
-			/*
-			 * Corners
-			 * 
-			 * These corners do not need objects as they can be placed directly
-			 * on the canvas
-			 */
-			
-			// Top left corner
-			ctx.drawImage(img,
-					1,
-					1,
-					sx-1,
-					sy-1,
-					0,
-					0,
-					sx-1,
-					sy-1);
-			
-			// Top right corner
-			ctx.drawImage(img,
-					sx+swidth,
-					1,
-					img.width-sx-swidth-1,
-					sy-1,
-					$(this).width()-(img.width-sx-swidth-1),
-					0,
-					img.width-sx-swidth-1,
-					sy-1);
-			
-			// bottom left corner
-			ctx.drawImage(img,
-					1,
-					sy+sheight,
-					sx-1,
-					img.height-sy-sheight-1,
-					0,
-					$(this).height()-(img.height-sy-sheight-1) + 1,
-					sx-1,
-					img.height-sy-sheight-1);
-			
-			// bottom right corner
-			ctx.drawImage(img,
-					sx+swidth,
-					sy+sheight,
-					img.width-sx-swidth-1,
-					img.height-sy-sheight-1,
-					$(this).width()-(img.width-sx-swidth-1) + 1,
-					$(this).height()-(img.height-sy-sheight-1) + 1,
-					img.width-sx-swidth-2,
-					img.height-sy-sheight-1);
+			for (var i = 0, m = verticalPieces.length; i < m; i++) {
+				for (var j = 0, n = horizontalPieces.length; j < n; j++) {
+					if (horizontalPieces[j][0] == 'd' || verticalPieces[i][0] == 'd') {
+						var tempFillWidth, tempFillHeight;
+						
+						tempFillWidth = (horizontalPieces[j][0] == 'd') ? 
+								fillWidth : horizontalPieces[j][2];
+						tempFillHeight = (verticalPieces[i][0] == 'd') ? 
+								fillHeight : verticalPieces[i][2];
+						
+						// we need to do a repeated pattern
+						var tempCanvas    = document.createElement('canvas');
+						tempCanvas.width  = horizontalPieces[j][2];
+						tempCanvas.height = verticalPieces[i][2];
+						
+						var tempCtx = tempCanvas.getContext('2d');
+						tempCtx.drawImage(oImg,
+								horizontalPieces[j][1], verticalPieces[i][1],
+								horizontalPieces[j][2], verticalPieces[i][2],
+								0, 						0,
+								horizontalPieces[j][2], verticalPieces[i][2]);
+						
+						var tempPattern = dCtx.createPattern(tempCanvas, 'repeat');
+						dCtx.fillStyle = tempPattern;
+						dCtx.fillRect(
+							0, 			   0,
+							tempFillWidth, tempFillHeight);
+						
+						dCtx.translate(tempFillWidth, 0);
+					} else {
+						// static piece
+						dCtx.drawImage(oImg,
+							horizontalPieces[j][1], verticalPieces[i][1],
+							horizontalPieces[j][2], verticalPieces[i][2],
+							0, 						0,
+							horizontalPieces[j][2], verticalPieces[i][2]);
+						dCtx.translate(horizontalPieces[j][2], 0);
+					}
+				}
+				
+				dCtx.translate(-dWidth, (verticalPieces[i][0] == 's' ? verticalPieces[i][2] : fillHeight));
+			}
 			
 			var position = $(this).position();
-			$(canvas).css('left', position.left);
-			$(canvas).css('top', position.top);
-			$(canvas).css('position', 'absolute');
+			$(dCanvas).css('left',     position.left);
+			$(dCanvas).css('top',      position.top);
+			$(dCanvas).css('position', 'absolute');
 			
-			$(this).before(canvas);
-			
-			
+			$(this).before(dCanvas);
 			
 		}
 	});
@@ -246,13 +117,28 @@ $(window).load(function() {
 	return;
 });
 
-function sepia(ca){
-	if (!ca.i) ca.i = 0;
-	var ctx = ca.getContext('2d');
-	ctx.globalAlpha = 0.1;
-	ctx.globalCompositeOperation = "darker";		
-	ctx.fillStyle = "rgba(255,0,0,1)";
-	ctx.fillRect(0,0,ca.width,ca.height);
-	if (ca.i++ <= 100) setTimeout(sepia,15,ca); 
+function getPieces(dataArray) {
+	var tempDS, tempPosition, tempWidth;
+	var tempArray = new Array();
+	
+	tempDS = (data[4] != 0) ? 's' : 'd';
+	tempPosition = 1;
+	
+	for (var i = 4, n = data.length - 4; i < n; i += 4) {
+		if (tempDS != ((data[i] != 0) ? 's' : 'd')) {
+			// box changed colors
+			tempWidth = (i / 4) - tempPosition;
+			tempArray.push(new Array(tempDS, tempPosition, tempWidth));
+			
+			tempDS = (data[i] != 0) ? 's' : 'd';
+			tempPosition = i / 4;
+			tempWidth = 1
+		}
+	}
+	
+	// push end
+	tempWidth = (i / 4) - tempPosition;
+	tempArray.push(new Array(tempDS, tempPosition, tempWidth));
+	
+	return tempArray;
 }
- 
