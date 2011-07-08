@@ -63,42 +63,43 @@ $(window).load(function() {
 			
 			for (var i = 0, m = verticalPieces.length; i < m; i++) {
 				for (var j = 0, n = horizontalPieces.length; j < n; j++) {
-					if (horizontalPieces[j][0] == 'd' || verticalPieces[i][0] == 'd') {
-						var tempFillWidth, tempFillHeight;
+					var tempFillWidth, tempFillHeight;
+					
+					tempFillWidth = (horizontalPieces[j][0] == 'd') ? 
+							fillWidth : horizontalPieces[j][2];
+					tempFillHeight = (verticalPieces[i][0] == 'd') ? 
+							fillHeight : verticalPieces[i][2];
 						
-						tempFillWidth = (horizontalPieces[j][0] == 'd') ? 
-								fillWidth : horizontalPieces[j][2];
-						tempFillHeight = (verticalPieces[i][0] == 'd') ? 
-								fillHeight : verticalPieces[i][2];
-						
-						// we need to do a repeated pattern
-						var tempCanvas    = document.createElement('canvas');
-						tempCanvas.width  = horizontalPieces[j][2];
-						tempCanvas.height = verticalPieces[i][2];
-						
-						var tempCtx = tempCanvas.getContext('2d');
-						tempCtx.drawImage(oImg,
-								horizontalPieces[j][1], verticalPieces[i][1],
-								horizontalPieces[j][2], verticalPieces[i][2],
-								0, 						0,
-								horizontalPieces[j][2], verticalPieces[i][2]);
-						
-						var tempPattern = dCtx.createPattern(tempCanvas, 'repeat');
-						dCtx.fillStyle = tempPattern;
-						dCtx.fillRect(
-							0, 			   0,
-							tempFillWidth, tempFillHeight);
-						
-						dCtx.translate(tempFillWidth, 0);
-					} else {
-						// static piece
-						dCtx.drawImage(oImg,
-							horizontalPieces[j][1], verticalPieces[i][1],
-							horizontalPieces[j][2], verticalPieces[i][2],
-							0, 						0,
-							horizontalPieces[j][2], verticalPieces[i][2]);
-						dCtx.translate(horizontalPieces[j][2], 0);
-					}
+					// Stretching :
+					dCtx.drawImage(oImg,
+					    horizontalPieces[j][1], verticalPieces[i][1],
+					    horizontalPieces[j][2], verticalPieces[i][2],
+					    0, 						0,
+					    tempFillWidth, tempFillHeight);
+					
+					dCtx.translate(tempFillWidth, 0);
+					    
+					
+					// Use this part for repeating:
+					/* var tempCanvas    = document.createElement('canvas');
+					 * tempCanvas.width  = horizontalPieces[j][2];
+					 * tempCanvas.height = verticalPieces[i][2];
+					 * 
+					 * var tempCtx = tempCanvas.getContext('2d');
+					 * tempCtx.drawImage(oImg,
+					 * 		horizontalPieces[j][1], verticalPieces[i][1],
+					 * 		horizontalPieces[j][2], verticalPieces[i][2],
+					 * 		0, 						0,
+					 *		horizontalPieces[j][2], verticalPieces[i][2]);
+					 * 
+					 * var tempPattern = dCtx.createPattern(tempCanvas, 'repeat');
+					 * dCtx.fillStyle = tempPattern;
+					 * dCtx.fillRect(
+					 * 		0, 			   0,
+					 * 		tempFillWidth, tempFillHeight);
+					 * 
+					 * dCtx.translate(tempFillWidth, 0);
+					 */
 				}
 				
 				dCtx.translate(-dWidth, (verticalPieces[i][0] == 's' ? verticalPieces[i][2] : fillHeight));
