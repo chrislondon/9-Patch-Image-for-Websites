@@ -106,11 +106,12 @@ $(window).load(function() {
 			}
 			
 			var position = $(this).position();
-			$(dCanvas).css('left',     position.left);
-			$(dCanvas).css('top',      position.top);
+			$(dCanvas).css('z-index',  -1);
+			$(dCanvas).css('left',     0);
+			$(dCanvas).css('top',      0);
 			$(dCanvas).css('position', 'absolute');
 			
-			$(this).before(dCanvas);
+			$(this).prepend(dCanvas);
 			
 		}
 	});
