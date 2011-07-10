@@ -4,6 +4,9 @@
 body, html {
 	height:100%;
 	width:100%;
+    
+    padding: 0px;
+    margin: 0px;
 }
 
 body {
@@ -30,7 +33,7 @@ body {
 }
 .contributor {
 	font-family: Arial;
-	height: 40px;
+	height: 30px;
 	width: 300px;
 	position: relative;
 	font-size: 15px;
