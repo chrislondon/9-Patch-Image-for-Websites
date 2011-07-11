@@ -17,6 +17,11 @@ $(window).load(function() {
 			dWidth = $(this).outerWidth();
 			dHeight = $(this).outerHeight();
 			dCanvas = document.createElement('canvas');
+			
+			if (useExCanvas) {
+				dCanvas = G_vmlCanvasManager.initElement(dCanvas);
+			}
+			
 			dCtx = dCanvas.getContext('2d');
 
 			dCtx.drawImage(oImg, 0, 0);
