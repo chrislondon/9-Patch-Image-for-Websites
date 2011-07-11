@@ -17,6 +17,11 @@ $(window).load(function() {
 			dWidth = $(this).outerWidth();
 			dHeight = $(this).outerHeight();
 			dCanvas = document.createElement('canvas');
+			
+			if (typeof FlashCanvas != "undefined") {
+			    FlashCanvas.initElement(dCanvas);
+			}
+			
 			dCtx = dCanvas.getContext('2d');
 
 			dCtx.drawImage(oImg, 0, 0);
