@@ -4,6 +4,9 @@
 body, html {
 	height:100%;
 	width:100%;
+    
+    padding: 0px;
+    margin: 0px;
 }
 
 body {
@@ -25,12 +28,12 @@ body {
 
 #fork_me {
 	position: absolute;
-	right: 41px;
+	right: 0px;
 	top: 0px;
 }
 .contributor {
 	font-family: Arial;
-	height: 40px;
+	height: 30px;
 	width: 300px;
 	position: relative;
 	font-size: 15px;
