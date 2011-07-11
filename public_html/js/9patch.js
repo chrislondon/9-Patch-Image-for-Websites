@@ -39,6 +39,7 @@ $(window).load(function() {
 
 			var fillWidth, fillHeight;
 
+			// Determine the width for the static and dynamic pieces
 			var tempStaticWidth = 0;
 			var tempDynamicCount = 0;
 			for (var i = 0, n = horizontalPieces.length; i < n; i++) {
@@ -51,6 +52,7 @@ $(window).load(function() {
 
 			fillWidth = (dWidth - tempStaticWidth) / tempDynamicCount;
 
+			// Determine the height for the static and dynamic pieces
 			var tempStaticHeight = 0;
 			var tempDynamicCount = 0;
 			for (var i = 0, n = verticalPieces.length; i < n; i++) {
@@ -63,6 +65,8 @@ $(window).load(function() {
 
 			fillHeight = (dHeight - tempStaticHeight) / tempDynamicCount;
 
+			// Loop through each of the vertical/horizontal pieces and draw on
+			// the canvas
 			for (var i = 0, m = verticalPieces.length; i < m; i++) {
 				for (var j = 0, n = horizontalPieces.length; j < n; j++) {
 					var tempFillWidth, tempFillHeight;
@@ -79,6 +83,7 @@ $(window).load(function() {
 					    0, 						0,
 					    tempFillWidth, tempFillHeight);
 
+					// Shift to next x position
 					dCtx.translate(tempFillWidth, 0);
 
 
@@ -104,9 +109,11 @@ $(window).load(function() {
 					 */
 				}
 
+				// shift back to 0 x and down to the next line
 				dCtx.translate(-dWidth, (verticalPieces[i][0] == 's' ? verticalPieces[i][2] : fillHeight));
 			}
 			
+			// store the canvas as the div's background
 			var url = dCanvas.toDataURL();
 			$(this).css("background", originalBG+" url("+url+")");
 			$(this).css("background-repeat", "no-repeat");
