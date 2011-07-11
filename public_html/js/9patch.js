@@ -1,6 +1,6 @@
 $(window).load(function() {
 	$('div').each(function(){
-		if ($(this).css('background-image').match(/\.9\.png/)) {
+		if ($(this).css('background-image').match(/\.9\.(png|gif)/i)) {
 			var oImgSrc = $(this).css('background-image').replace(/"/g,"").replace(/url\(|\)$/ig, "");
 			
 			var originalBG = $(this).css("background-color");
