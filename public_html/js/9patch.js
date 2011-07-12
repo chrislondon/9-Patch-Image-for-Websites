@@ -28,11 +28,11 @@ $(window).load(function() {
 			var staticColor, repeatColor;
 			// Loop over each  horizontal pixel and get piece
 			data = dCtx.getImageData(0, 0, oWidth, 1).data;
-			staticColor = data[0] + ',' + data[1] + ',' + data[2] + ',' data[3];
+			staticColor = data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3];
 			
 			var tempLength = data.length - 4;
 			repeatColor = data[tempLength] + ',' + data[tempLength + 1] + ',' + 
-				data[tempLength + 2] + ',' data[tempLength + 3];
+				data[tempLength + 2] + ',' + data[tempLength + 3];
 			horizontalPieces = getPieces(data, staticColor, repeatColor);
 			
 			// Loop over each  horizontal pixel and get piece
