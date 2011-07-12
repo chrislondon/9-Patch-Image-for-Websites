@@ -25,13 +25,19 @@ $(window).load(function() {
 			var verticalPieces = new Array();
 			// each piece contains d|s, position, width
 
+			var staticColor, repeatColor;
 			// Loop over each  horizontal pixel and get piece
 			data = dCtx.getImageData(0, 0, oWidth, 1).data;
-			horizontalPieces = getPieces(data);
-
+			staticColor = data[0] + ',' + data[1] + ',' + data[2] + ',' data[3];
+			
+			var tempLength = data.length - 4;
+			repeatColor = data[tempLength] + ',' + data[tempLength + 1] + ',' + 
+				data[tempLength + 2] + ',' data[tempLength + 3];
+			horizontalPieces = getPieces(data, staticColor, repeatColor);
+			
 			// Loop over each  horizontal pixel and get piece
 			data = dCtx.getImageData(0, 0, 1, oHeight).data;
-			verticalPieces = getPieces(data);
+			verticalPieces = getPieces(data, staticColor, repeatColor);
 
 			// use horizontalPieces and verticalPieces to generate image
 			dCanvas.width = dWidth;
@@ -42,6 +48,7 @@ $(window).load(function() {
 			// Determine the width for the static and dynamic pieces
 			var tempStaticWidth = 0;
 			var tempDynamicCount = 0;
+			
 			for (var i = 0, n = horizontalPieces.length; i < n; i++) {
 				if (horizontalPieces[i][0] == 's') {
 					tempStaticWidth += horizontalPieces[i][2];
@@ -77,36 +84,35 @@ $(window).load(function() {
 							fillHeight : verticalPieces[i][2];
 
 					// Stretching :
-					dCtx.drawImage(oImg,
-					    horizontalPieces[j][1], verticalPieces[i][1],
-					    horizontalPieces[j][2], verticalPieces[i][2],
-					    0, 						0,
-					    tempFillWidth, tempFillHeight);
+					if (verticalPieces[i][0] == 'r') {
+						// Stretching is the same function for the static squares
+						// the only difference is the widths/heights are the same.
+						dCtx.drawImage(oImg,
+						    horizontalPieces[j][1], verticalPieces[i][1],
+						    horizontalPieces[j][2], verticalPieces[i][2],
+						    0, 						0,
+						    tempFillWidth, tempFillHeight);
+					} else {
+						var tempCanvas    = document.createElement('canvas');
+						tempCanvas.width  = horizontalPieces[j][2];
+						tempCanvas.height = verticalPieces[i][2];
+						
+						var tempCtx = tempCanvas.getContext('2d');
+						tempCtx.drawImage(oImg,
+								horizontalPieces[j][1], verticalPieces[i][1],
+								horizontalPieces[j][2], verticalPieces[i][2],
+								0, 						0,
+								horizontalPieces[j][2], verticalPieces[i][2]);
+						
+						var tempPattern = dCtx.createPattern(tempCanvas, 'repeat');
+						dCtx.fillStyle = tempPattern;
+						dCtx.fillRect(
+								0, 			   0,
+								tempFillWidth, tempFillHeight);
+					}
 
 					// Shift to next x position
 					dCtx.translate(tempFillWidth, 0);
-
-
-					// Use this part for repeating:
-					/* var tempCanvas    = document.createElement('canvas');
-					 * tempCanvas.width  = horizontalPieces[j][2];
-					 * tempCanvas.height = verticalPieces[i][2];
-					 * 
-					 * var tempCtx = tempCanvas.getContext('2d');
-					 * tempCtx.drawImage(oImg,
-					 * 		horizontalPieces[j][1], verticalPieces[i][1],
-					 * 		horizontalPieces[j][2], verticalPieces[i][2],
-					 * 		0, 						0,
-					 *		horizontalPieces[j][2], verticalPieces[i][2]);
-					 * 
-					 * var tempPattern = dCtx.createPattern(tempCanvas, 'repeat');
-					 * dCtx.fillStyle = tempPattern;
-					 * dCtx.fillRect(
-					 * 		0, 			   0,
-					 * 		tempFillWidth, tempFillHeight);
-					 * 
-					 * dCtx.translate(tempFillWidth, 0);
-					 */
 				}
 
 				// shift back to 0 x and down to the next line
@@ -123,20 +129,23 @@ $(window).load(function() {
 	return;
 });
 
-function getPieces(dataArray) {
-	var tempDS, tempPosition, tempWidth;
+function getPieces(dataArray, staticColor, repeatColor) {
+	var tempDS, tempPosition, tempWidth, tempColor, tempType;
 	var tempArray = new Array();
 
-	tempDS = (data[4] != 0) ? 's' : 'd';
+	tempColor = data[4] + ',' + data[5] + ',' + data[6] + ',' + data[7];
+	tempDS = (tempColor == staticColor ? 's' : (tempColor == repeatColor ? 'r' : 'd'));
 	tempPosition = 1;
 
 	for (var i = 4, n = data.length - 4; i < n; i += 4) {
-		if (tempDS != ((data[i] != 0) ? 's' : 'd')) {
+		tempColor = data[i] + ',' + data[i + 1] + ',' + data[i + 2] + ',' + data[i + 3];
+		tempType = (tempColor == staticColor ? 's' : (tempColor == repeatColor ? 'r' : 'd'));
+		if (tempDS != tempType) {
 			// box changed colors
 			tempWidth = (i / 4) - tempPosition;
 			tempArray.push(new Array(tempDS, tempPosition, tempWidth));
 
-			tempDS = (data[i] != 0) ? 's' : 'd';
+			tempDS = tempType;
 			tempPosition = i / 4;
 			tempWidth = 1
 		}
