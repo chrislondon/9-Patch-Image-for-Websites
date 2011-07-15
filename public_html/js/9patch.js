@@ -84,7 +84,7 @@ $(window).load(function() {
 							fillHeight : verticalPieces[i][2];
 
 					// Stretching :
-					if (verticalPieces[i][0] == 'r') {
+					if (verticalPieces[i][0] != 'r') {
 						// Stretching is the same function for the static squares
 						// the only difference is the widths/heights are the same.
 						dCtx.drawImage(oImg,
