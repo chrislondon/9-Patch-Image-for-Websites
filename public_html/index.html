@@ -5,15 +5,23 @@
 	<title>9 Patch Image</title>
 
 	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
 	
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script> 
+	<script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
 	<script type="text/javascript" src="js/9patch.js"></script> 
+	
+	<script>
+	$(function() {
+		$( "#center_content" ).resizable({minWidth:450, minHeight:350});
+	});
+	</script>
 </head>
 
 
 
 <body>
-	<div id="center_content">
+	<div id="center_content"  class="ui-widget-content">
 		<div id="fork_me">
 			<a href="https://github.com/chrislondon/9-Patch-Image-for-Websites" target="_blank">
 				<img src="img/fork-me.png" />
