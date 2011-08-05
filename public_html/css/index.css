@@ -12,6 +12,7 @@ body, html {
 body {
 	background: #bbcfd8;
 	padding-top: 20px;
+	font-family: Arial, sans-serif
 }
 
 /***
@@ -32,6 +33,13 @@ body {
 	right: 0px;
 	top: 0px;
 }
+
+#drag_corner {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;	
+}
+
 .contributor {
 	font-family: Arial;
 	height: 30px;
