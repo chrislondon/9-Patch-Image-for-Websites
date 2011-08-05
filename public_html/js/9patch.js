@@ -1,17 +1,46 @@
-$(window).load(function() {
-	$('div').each(function(){
-		if ($(this).css('background-image').match(/\.9\.(png|gif)/i)) {
-			new NinePatch($(this));
-		}
-	});
-});
+// Attach NinePatchWindowLoad to the window load
+if (window.attachEvent) {
+	window.attachEvent('onload', NinePatchWindowLoad);
+} else if (window.addEventListener) {
+	window.addEventListener('load', NinePatchWindowLoad, false);
+} else {
+	document.addEventListener('load', NinePatchWindowLoad, false);
+}
 
+// Run through all divs onload and initiate NinePatch objects
+function NinePatchWindowLoad() {
+	var elms = document.getElementsByTagName('div');
+	for (var i in elms) {
+		if (NinePatchGetStyle(elms[i], 'background-image').match(/\.9\.(png|gif)/i)) {
+			new NinePatch(elms[i]);
+		}
+	}
+}
+
+// Cross browser function to get computed style.
+function NinePatchGetStyle(element, style) {
+	if (window.getComputedStyle) {
+		var computedStyle = window.getComputedStyle(element, "");
+		if (computedStyle == null) return "";
+		return computedStyle.getPropertyValue(style);
+	} else if (element.currentStyle) {
+		return element.currentStyle[style];
+	} else {
+		return "";
+	}
+}
+
+// 9patch constructer.  Sets up cached data and runs initial draw.
 function NinePatch(div) {
 	this.div = div;
+	
+	// Load 9patch from background-image
 	this.bgImage = new Image();
-	this.bgImage.src = this.div.css('background-image').replace(/"/g,"").replace(/url\(|\)$/ig, "");
-	this.originalBG = this.div.css("background-color");
-	this.div.css('background', 'none');
+	this.bgImage.src = NinePatchGetStyle(this.div, 'background-image').replace(/"/g,"").replace(/url\(|\)$/ig, "");
+	this.originalBgColor = NinePatchGetStyle(this.div, 'background-color');
+	
+	this.div.style.background = 'none';
+	this.div.style.backgroundRepeat = 'no-repeat';
 	
 	// Create a temporary canvas to get the 9Patch index data.
 	var tempCtx, tempCanvas;
@@ -39,14 +68,21 @@ function NinePatch(div) {
 	
 	this.draw();
 	var _this = this;
-	this.div.resize(function(){_this.draw()});
+	this.div.onresize = function(){_this.draw()};
 }
+
+// Stores the HTMLDivElement that's using the 9patch image
 NinePatch.prototype.div = null;
+// Stores the original background css color to use later
 NinePatch.prototype.originalBG = null;
+// Stores the pieces used to generate the horizontal layout
 NinePatch.prototype.horizontalPieces = null;
+// Stores the pieces used to generate the vertical layout
 NinePatch.prototype.verticalPieces = null;
+// Stores the 9patch image
 NinePatch.prototype.bgImage = null;
 
+// Gets the horizontal|vertical pieces based on image data
 NinePatch.prototype.getPieces = function(data, staticColor, repeatColor) {
 	var tempDS, tempPosition, tempWidth, tempColor, tempType;
 	var tempArray = new Array();
@@ -76,10 +112,11 @@ NinePatch.prototype.getPieces = function(data, staticColor, repeatColor) {
 	return tempArray;
 }
 
+// Function to draw the background for the given element size.
 NinePatch.prototype.draw = function() {
 	var dCtx, dCanvas, dWidth, dHeight;
-	dWidth = this.div.outerWidth();
-	dHeight = this.div.outerHeight();
+	dWidth = this.div.offsetWidth;
+	dHeight = this.div.offsetHeight;
 	dCanvas = document.createElement('canvas');
 	dCtx = dCanvas.getContext('2d');
 	
@@ -115,7 +152,6 @@ NinePatch.prototype.draw = function() {
 
 	fillHeight = (dHeight - tempStaticHeight) / tempDynamicCount;
 
-	console.log(dWidth);
 	// Loop through each of the vertical/horizontal pieces and draw on
 	// the canvas
 	for (var i = 0, m = this.verticalPieces.length; i < m; i++) {
@@ -131,7 +167,6 @@ NinePatch.prototype.draw = function() {
 			if (this.verticalPieces[i][0] != 'r') {
 				// Stretching is the same function for the static squares
 				// the only difference is the widths/heights are the same.
-				console.log(this.bgImage);
 				dCtx.drawImage(
 						
 						this.bgImage,
@@ -168,6 +203,5 @@ NinePatch.prototype.draw = function() {
 	
 	// store the canvas as the div's background
 	var url = dCanvas.toDataURL();
-	this.div.css("background", this.originalBG+" url("+url+")");
-	this.div.css("background-repeat", "no-repeat");
+	this.div.style.background = this.originalBgColor+" url("+url+")";
 }
