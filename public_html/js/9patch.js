@@ -30,7 +30,11 @@ function NinePatchGetStyle(element, style) {
 	}
 }
 
-// 9patch constructer.  Sets up cached data and runs initial draw.
+/**
+ * 9patch constructer.  Sets up cached data and runs initial draw.
+ * 
+ * @constructor
+ */
 function NinePatch(div) {
 	this.div = div;
 	
@@ -141,7 +145,7 @@ NinePatch.prototype.draw = function() {
 
 	// Determine the height for the static and dynamic pieces
 	var tempStaticHeight = 0;
-	var tempDynamicCount = 0;
+	tempDynamicCount = 0;
 	for (var i = 0, n = this.verticalPieces.length; i < n; i++) {
 		if (this.verticalPieces[i][0] == 's') {
 			tempStaticHeight += this.verticalPieces[i][2];
@@ -202,6 +206,6 @@ NinePatch.prototype.draw = function() {
 	}
 	
 	// store the canvas as the div's background
-	var url = dCanvas.toDataURL();
+	var url = dCanvas.toDataURL("image/png");
 	this.div.style.background = this.originalBgColor+" url("+url+")";
 }
