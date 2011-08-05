@@ -22,7 +22,8 @@ body {
 	height: 500px;
 	margin: 0 auto;
 	padding: 20px;
-	background: #fff url(../img/test.9.png) no-repeat -1000px -1000px;
+	border: 0;
+	background: url(../img/test.9.png) no-repeat -1000px -1000px;
 	position: relative;
 }
 
@@ -39,4 +40,8 @@ body {
 	font-size: 15px;
 	padding: 10px 0 0 10px;
 	background: #fff url(../img/test_multipart.9.png) no-repeat -1000px -1000px;
+}
+
+.ui-widget-content .ui-icon {
+	background: none !important;	
 }
