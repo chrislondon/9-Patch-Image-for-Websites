@@ -44,7 +44,6 @@ function NinePatch(div) {
 	this.originalBgColor = NinePatchGetStyle(this.div, 'background-color');
 	
 	this.div.style.background = 'none';
-	this.div.style.backgroundRepeat = 'no-repeat';
 	
 	// Create a temporary canvas to get the 9Patch index data.
 	var tempCtx, tempCanvas;
@@ -207,5 +206,13 @@ NinePatch.prototype.draw = function() {
 	
 	// store the canvas as the div's background
 	var url = dCanvas.toDataURL("image/png");
-	this.div.style.background = this.originalBgColor+" url("+url+")";
+	
+	var tempIMG = new Image();
+	
+	var _this = this;
+	tempIMG.onload = function(event){
+		_this.div.style.background = _this.originalBgColor + " url("+url+") no-repeat";
+	}
+	
+	tempIMG.src = url;
 }
