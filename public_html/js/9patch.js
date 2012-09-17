@@ -30,6 +30,22 @@ function NinePatchGetStyle(element, style) {
 	}
 }
 
+
+// Cross browser function to find valid property
+function NinePatchGetSupportedProp(propArray){
+    var root = document.documentElement //reference root element of document
+    for (var i = 0; i < propArray.length; i++){
+		// loop through possible properties
+        if (typeof root.style[propArray[i]] == "string") {
+			//if the property value is a string (versus undefined)
+            return propArray[i] // return that string
+        }
+    }
+
+	return false;
+}
+
+
 /**
  * 9patch constructer.  Sets up cached data and runs initial draw.
  * 
@@ -67,11 +83,21 @@ function NinePatch(div) {
 	data = tempCtx.getImageData(0, 0, 1, this.bgImage.height).data;
 	this.verticalPieces = this.getPieces(data, staticColor, repeatColor);
 
-	// use this.horizontalPieces and this.verticalPieces to generate image
-	
-	this.draw();
 	var _this = this;
-	this.div.onresize = function(){_this.draw()};
+
+	// determine if we could use border image (only available on single strech
+	// area images
+	if (this.horizontalPieces.length == 3 && this.verticalPieces.length == 3
+			&& this.horizontalPieces[0][0] == 's' && this.horizontalPieces[1][0] != 's'
+			&& this.horizontalPieces[2][0] == 's' && this.verticalPieces[0][0] == 's'
+			&& this.verticalPieces[1][0] != 's' && this.verticalPieces[2][0] == 's') {
+		// This is a simple 9 patch so use CSS3
+		this.drawCSS3();
+	} else {
+		// use this.horizontalPieces and this.verticalPieces to generate image
+		this.draw();
+		this.div.onresize = function(){_this.draw()};
+	}
 }
 
 // Stores the HTMLDivElement that's using the 9patch image
@@ -215,4 +241,36 @@ NinePatch.prototype.draw = function() {
 	}
 	
 	tempIMG.src = url;
+}
+
+NinePatch.prototype.drawCSS3 = function() {
+	var dCtx, dCanvas;
+	dCanvas = document.createElement('canvas');
+	dCtx = dCanvas.getContext('2d');
+
+	dCanvas.width = this.bgImage.width - 2;
+	dCanvas.height = this.bgImage.height - 2;
+
+	dCtx.drawImage(this.bgImage, -1, -1);
+
+	var url = dCanvas.toDataURL("image/png");
+
+	var tempIMG = new Image();
+
+	var _this = this;
+	tempIMG.onload = function(event){
+		var borderImage = NinePatchGetSupportedProp(['MozBorderImage', 'WebkitBorderImage',  'OBorderImage', 'borderImage'])
+
+		var pixPX = _this.verticalPieces[0][2] + "px " + _this.horizontalPieces[2][2] + "px " + _this.verticalPieces[2][2] + "px " + _this.horizontalPieces[0][2] + "px";
+		var pix = _this.verticalPieces[0][2] + " " + _this.horizontalPieces[2][2] + " " + _this.verticalPieces[2][2] + " " + _this.horizontalPieces[0][2];
+		_this.div.style['borderWidth'] = pixPX;
+		_this.div.style['padding'] = "0";
+
+		_this.div.style[borderImage] = "url(" + url + ") " + pix + " " 
+			+ (_this.horizontalPieces[1][1] == 'r' ? 'repeat' : 'stretch') + " "
+			+ (_this.verticalPieces[1][1] == 'r' ? 'repeat' : 'stretch') ;
+	}
+
+	tempIMG.src = url;
+	// Take image and slice out border
 }
