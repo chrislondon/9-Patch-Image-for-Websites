@@ -10,7 +10,7 @@ if (window.attachEvent) {
 // Run through all divs onload and initiate NinePatch objects
 function NinePatchWindowLoad() {
 	var elms = document.getElementsByTagName('div');
-	for (var i in elms) {
+	for (var i = 0; i < elms.length; i++) {
 		if (NinePatchGetStyle(elms[i], 'background-image').match(/\.9\.(png|gif)/i)) {
 			new NinePatch(elms[i]);
 		}
@@ -264,6 +264,7 @@ NinePatch.prototype.drawCSS3 = function() {
 		var pixPX = _this.verticalPieces[0][2] + "px " + _this.horizontalPieces[2][2] + "px " + _this.verticalPieces[2][2] + "px " + _this.horizontalPieces[0][2] + "px";
 		var pix = _this.verticalPieces[0][2] + " " + _this.horizontalPieces[2][2] + " " + _this.verticalPieces[2][2] + " " + _this.horizontalPieces[0][2];
 		_this.div.style['borderWidth'] = pixPX;
+		_this.div.style['borderStyle'] = "solid";
 		_this.div.style['padding'] = "0";
 
 		_this.div.style[borderImage] = "url(" + url + ") " + pix + " " 
@@ -274,3 +275,5 @@ NinePatch.prototype.drawCSS3 = function() {
 	tempIMG.src = url;
 	// Take image and slice out border
 }
+
+window['NinePatch'] = NinePatch;
