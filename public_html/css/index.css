@@ -2,11 +2,8 @@
  *  Generic CSS Styles
  */
 body, html {
-	height:100%;
-	width:100%;
-    
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
 }
 
 body {
@@ -37,7 +34,7 @@ body {
 #fork_me {
 	position: absolute;
 	right: -14px;
-	top: 0px;
+	top: 0;
 }
 
 #drag_corner {
@@ -57,7 +54,7 @@ body {
 }
 
 .ui-widget-content .ui-icon {
-	background: none !important;	
+	background: none;
 }
 
 .ui-widget-content .ui-resizable-e {

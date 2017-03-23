@@ -48,19 +48,19 @@ function NinePatchGetSupportedProp(propArray){
 
 /**
  * 9patch constructer.  Sets up cached data and runs initial draw.
- * 
+ *
  * @constructor
  */
 function NinePatch(div) {
 	this.div = div;
-	
+
 	// Load 9patch from background-image
 	this.bgImage = new Image();
 	this.bgImage.src = NinePatchGetStyle(this.div, 'background-image').replace(/"/g,"").replace(/url\(|\)$/ig, "");
 	this.originalBgColor = NinePatchGetStyle(this.div, 'background-color');
-	
+
 	this.div.style.background = 'none';
-	
+
 	// Create a temporary canvas to get the 9Patch index data.
 	var tempCtx, tempCanvas;
 	tempCanvas = document.createElement('canvas');
@@ -69,23 +69,23 @@ function NinePatch(div) {
 
 	// Loop over each  horizontal pixel and get piece
 	var data = tempCtx.getImageData(0, 0, this.bgImage.width, 1).data;
-	
+
 	// Use the upper-left corner to get staticColor, use the upper-right corner
 	// to get the repeatColor.
 	var tempLength = data.length - 4;
 	var staticColor = data[0] + ',' + data[1] + ',' + data[2] + ',' + data[3];
-	var repeatColor = data[tempLength] + ',' + data[tempLength + 1] + ',' + 
+	var repeatColor = data[tempLength] + ',' + data[tempLength + 1] + ',' +
 			data[tempLength + 2] + ',' + data[tempLength + 3];
-	
+
 	this.horizontalPieces = this.getPieces(data, staticColor, repeatColor);
-	
+
 	// Loop over each  horizontal pixel and get piece
 	data = tempCtx.getImageData(0, 0, 1, this.bgImage.height).data;
 	this.verticalPieces = this.getPieces(data, staticColor, repeatColor);
 
 	var _this = this;
 
-	// determine if we could use border image (only available on single strech
+	// determine if we could use border image (only available on single stretch
 	// area images
 	if (this.horizontalPieces.length == 3 && this.verticalPieces.length == 3
 			&& this.horizontalPieces[0][0] == 's' && this.horizontalPieces[1][0] != 's'
@@ -148,16 +148,16 @@ NinePatch.prototype.draw = function() {
 	dHeight = this.div.offsetHeight;
 	dCanvas = document.createElement('canvas');
 	dCtx = dCanvas.getContext('2d');
-	
+
 	dCanvas.width = dWidth;
 	dCanvas.height = dHeight;
-	
+
 	var fillWidth, fillHeight;
 
 	// Determine the width for the static and dynamic pieces
 	var tempStaticWidth = 0;
 	var tempDynamicCount = 0;
-	
+
 	for (var i = 0, n = this.horizontalPieces.length; i < n; i++) {
 		if (this.horizontalPieces[i][0] == 's') {
 			tempStaticWidth += this.horizontalPieces[i][2];
@@ -187,9 +187,9 @@ NinePatch.prototype.draw = function() {
 		for (var j = 0, n = this.horizontalPieces.length; j < n; j++) {
 			var tempFillWidth, tempFillHeight;
 
-			tempFillWidth = (this.horizontalPieces[j][0] == 'd') ? 
+			tempFillWidth = (this.horizontalPieces[j][0] == 'd') ?
 					fillWidth : this.horizontalPieces[j][2];
-			tempFillHeight = (this.verticalPieces[i][0] == 'd') ? 
+			tempFillHeight = (this.verticalPieces[i][0] == 'd') ?
 					fillHeight : this.verticalPieces[i][2];
 
 			// Stretching :
@@ -197,7 +197,7 @@ NinePatch.prototype.draw = function() {
 				// Stretching is the same function for the static squares
 				// the only difference is the widths/heights are the same.
 				dCtx.drawImage(
-						
+
 						this.bgImage,
 				    this.horizontalPieces[j][1], this.verticalPieces[i][1],
 				    this.horizontalPieces[j][2], this.verticalPieces[i][2],
@@ -207,14 +207,14 @@ NinePatch.prototype.draw = function() {
 				var tempCanvas    = document.createElement('canvas');
 				tempCanvas.width  = this.horizontalPieces[j][2];
 				tempCanvas.height = this.verticalPieces[i][2];
-				
+
 				var tempCtx = tempCanvas.getContext('2d');
 				tempCtx.drawImage(this.bgImage,
 						this.horizontalPieces[j][1], this.verticalPieces[i][1],
 						this.horizontalPieces[j][2], this.verticalPieces[i][2],
 						0, 						0,
 						this.horizontalPieces[j][2], this.verticalPieces[i][2]);
-				
+
 				var tempPattern = dCtx.createPattern(tempCanvas, 'repeat');
 				dCtx.fillStyle = tempPattern;
 				dCtx.fillRect(
@@ -229,17 +229,17 @@ NinePatch.prototype.draw = function() {
 		// shift back to 0 x and down to the next line
 		dCtx.translate(-dWidth, (this.verticalPieces[i][0] == 's' ? this.verticalPieces[i][2] : fillHeight));
 	}
-	
+
 	// store the canvas as the div's background
 	var url = dCanvas.toDataURL("image/png");
-	
+
 	var tempIMG = new Image();
-	
+
 	var _this = this;
 	tempIMG.onload = function(event){
 		_this.div.style.background = _this.originalBgColor + " url("+url+") no-repeat";
 	}
-	
+
 	tempIMG.src = url;
 }
 
@@ -267,7 +267,7 @@ NinePatch.prototype.drawCSS3 = function() {
 		_this.div.style['borderStyle'] = "solid";
 		_this.div.style['padding'] = "0";
 
-		_this.div.style[borderImage] = "url(" + url + ") " + pix + " " 
+		_this.div.style[borderImage] = "url(" + url + ") " + pix + " "
 			+ (_this.horizontalPieces[1][1] == 'r' ? 'repeat' : 'stretch') + " "
 			+ (_this.verticalPieces[1][1] == 'r' ? 'repeat' : 'stretch') ;
 	}
